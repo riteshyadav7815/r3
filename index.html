@@ -1,0 +1,332 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SETU Program - Medical Referral System</title>
+    <link href="style.css" rel="stylesheet" type="text/css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="logo">
+                <i class="fas fa-hospital"></i>
+                <h1>SETU Program</h1>
+                <span class="subtitle">Medical Referral Control Room</span>
+            </div>
+            <nav class="nav">
+                <button class="nav-btn active" data-section="dashboard">
+                    <i class="fas fa-tachometer-alt"></i> Dashboard
+                </button>
+                <button class="nav-btn" data-section="referral">
+                    <i class="fas fa-plus-circle"></i> New Referral
+                </button>
+                <button class="nav-btn" data-section="tracking">
+                    <i class="fas fa-route"></i> Tracking
+                </button>
+                <button class="nav-btn" data-section="resources">
+                    <i class="fas fa-bed"></i> Resources
+                </button>
+                <button class="nav-btn" data-section="admin" id="adminBtn">
+                    <i class="fas fa-cogs"></i> Admin
+                </button>
+            </nav>
+            <div class="user-info">
+                <div class="notification-icon" onclick="toggleNotifications()">
+                    <i class="fas fa-bell"></i>
+                    <span class="notification-badge" id="notificationBadge">0</span>
+                </div>
+                <i class="fas fa-user"></i>
+                <span id="userDisplay">Loading...</span>
+                <button class="logout-btn" onclick="logout()">
+                    <i class="fas fa-sign-out-alt"></i>
+                </button>
+            </div>
+        </header>
+
+        <!-- Notification Panel -->
+        <div class="notification-panel" id="notificationPanel">
+            <div class="notification-header">
+                <h3>Live Notifications</h3>
+                <button onclick="toggleNotifications()"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="notification-list" id="notificationList">
+                <!-- Notifications will be populated here -->
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Dashboard Section -->
+            <section id="dashboard" class="section active">
+                <div class="section-header">
+                    <h2><i class="fas fa-tachometer-alt"></i> Control Room Dashboard</h2>
+                    <div class="status-indicators">
+                        <div class="status-card emergency">
+                            <i class="fas fa-exclamation-triangle"></i>
+                            <span>Emergency</span>
+                            <div class="count" id="emergencyCount">0</div>
+                        </div>
+                        <div class="status-card urgent">
+                            <i class="fas fa-clock"></i>
+                            <span>Urgent</span>
+                            <div class="count" id="urgentCount">0</div>
+                        </div>
+                        <div class="status-card routine">
+                            <i class="fas fa-calendar"></i>
+                            <span>Routine</span>
+                            <div class="count" id="routineCount">0</div>
+                        </div>
+                        <div class="status-card maa-yojana">
+                            <i class="fas fa-heart"></i>
+                            <span>MAA Yojana</span>
+                            <div class="count" id="maaYojanaCount">0</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="dashboard-grid">
+                    <div class="dashboard-card">
+                        <div class="card-header">
+                            <h3><i class="fas fa-list"></i> Live Referral Queue</h3>
+                            <button class="refresh-btn" onclick="loadDashboardData()">
+                                <i class="fas fa-sync-alt"></i>
+                            </button>
+                        </div>
+                        <div class="referral-queue" id="liveReferrals">
+                            <!-- Live referrals will be populated here -->
+                        </div>
+                    </div>
+
+                    <div class="dashboard-card">
+                        <div class="card-header">
+                            <h3><i class="fas fa-bed"></i> Resource Status</h3>
+                            <button class="refresh-btn" onclick="refreshResourceStatus()">
+                                <i class="fas fa-sync-alt"></i>
+                            </button>
+                        </div>
+                        <div class="resource-status" id="resourceStatus">
+                            <!-- Resource status will be populated here -->
+                        </div>
+                    </div>
+
+                    <div class="dashboard-card">
+                        <div class="card-header">
+                            <h3><i class="fas fa-chart-pie"></i> Today's Analytics</h3>
+                        </div>
+                        <div class="analytics-summary" id="analyticsSummary">
+                            <!-- Analytics will be populated here -->
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- New Referral Section -->
+            <section id="referral" class="section">
+                <div class="section-header">
+                    <h2><i class="fas fa-plus-circle"></i> Create New Referral</h2>
+                    <div class="qr-actions">
+                        <button class="btn-primary" onclick="generateQRCodes()">
+                            <i class="fas fa-qrcode"></i> Generate QR Codes
+                        </button>
+                    </div>
+                </div>
+
+                <form class="referral-form" id="referralForm">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="patientName">Patient Name *</label>
+                            <input type="text" id="patientName" name="patientName" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="age">Age *</label>
+                            <input type="number" id="age" name="age" min="0" max="120" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="gender">Gender *</label>
+                            <select id="gender" name="gender" required>
+                                <option value="">Select Gender</option>
+                                <option value="male">Male</option>
+                                <option value="female">Female</option>
+                                <option value="other">Other</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="contact">Contact Number</label>
+                            <input type="tel" id="contact" name="contact" pattern="[0-9+\-\s()]+">
+                        </div>
+                        <div class="form-group full-width">
+                            <label for="medicalHistory">Medical History</label>
+                            <textarea id="medicalHistory" name="medicalHistory" rows="3"></textarea>
+                        </div>
+                        <div class="form-group full-width">
+                            <label for="reason">Reason for Referral *</label>
+                            <textarea id="reason" name="reason" rows="3" required></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="urgency">Urgency Level *</label>
+                            <select id="urgency" name="urgency" required>
+                                <option value="">Select Urgency</option>
+                                <option value="emergency">Emergency</option>
+                                <option value="urgent">Urgent</option>
+                                <option value="routine">Routine</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="specialty">Specialty Required *</label>
+                            <select id="specialty" name="specialty" required>
+                                <option value="">Select Specialty</option>
+                                <option value="cardiology">Cardiology</option>
+                                <option value="neurology">Neurology</option>
+                                <option value="orthopedics">Orthopedics</option>
+                                <option value="pediatrics">Pediatrics</option>
+                                <option value="surgery">Surgery</option>
+                                <option value="emergency">Emergency Medicine</option>
+                                <option value="internal">Internal Medicine</option>
+                                <option value="obstetrics">Obstetrics & Gynecology</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="hospitalId">Preferred Hospital</label>
+                            <select id="hospitalId" name="hospitalId">
+                                <option value="">Auto-assign based on availability</option>
+                            </select>
+                        </div>
+                        <div class="form-group checkbox-group">
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="maaYojana" name="maaYojana">
+                                <span class="checkmark"></span>
+                                MAA Yojana Patient
+                            </label>
+                        </div>
+                    </div>
+                    <div class="form-actions">
+                        <button type="button" class="btn-secondary" onclick="document.getElementById('referralForm').reset()">
+                            Clear Form
+                        </button>
+                        <button type="submit" class="btn-primary">
+                            <i class="fas fa-paper-plane"></i> Submit Referral
+                        </button>
+                    </div>
+                </form>
+            </section>
+
+            <!-- Tracking Section -->
+            <section id="tracking" class="section">
+                <div class="section-header">
+                    <h2><i class="fas fa-route"></i> Patient Tracking</h2>
+                    <div class="tracking-controls">
+                        <select id="statusFilter">
+                            <option value="all">All Status</option>
+                            <option value="pending">Pending</option>
+                            <option value="confirmed">Confirmed</option>
+                            <option value="arrived">Arrived</option>
+                            <option value="admitted">Admitted</option>
+                        </select>
+                        <button class="btn-primary" onclick="refreshTracking()">
+                            <i class="fas fa-sync-alt"></i> Refresh
+                        </button>
+                    </div>
+                </div>
+                <div class="tracking-list" id="trackingList">
+                    <!-- Tracking items will be populated here -->
+                </div>
+            </section>
+
+            <!-- Resources Section -->
+            <section id="resources" class="section">
+                <div class="section-header">
+                    <h2><i class="fas fa-bed"></i> Resource Management</h2>
+                    <div class="resource-controls">
+                        <button class="btn-primary" onclick="refreshResourceStatus()">
+                            <i class="fas fa-sync-alt"></i> Refresh Status
+                        </button>
+                    </div>
+                </div>
+                <div class="resources-grid" id="resourcesGrid">
+                    <!-- Resource cards will be populated here -->
+                </div>
+            </section>
+
+            <!-- Admin Section -->
+            <section id="admin" class="section">
+                <div class="section-header">
+                    <h2><i class="fas fa-cogs"></i> System Administration</h2>
+                </div>
+                <div class="admin-grid">
+                    <div class="admin-card">
+                        <div class="card-header">
+                            <h3><i class="fas fa-hospital"></i> Hospital Management</h3>
+                            <button class="btn-primary" onclick="showAddHospitalModal()">
+                                <i class="fas fa-plus"></i> Add Hospital
+                            </button>
+                        </div>
+                        <div class="admin-list" id="hospitalList">
+                            <!-- Hospital list will be populated here -->
+                        </div>
+                    </div>
+
+                    <div class="admin-card">
+                        <div class="card-header">
+                            <h3><i class="fas fa-users"></i> User Management</h3>
+                            <button class="btn-primary" onclick="showAddUserModal()">
+                                <i class="fas fa-user-plus"></i> Add User
+                            </button>
+                        </div>
+                        <div class="admin-list" id="userList">
+                            <!-- User list will be populated here -->
+                        </div>
+                    </div>
+
+                    <div class="admin-card">
+                        <div class="card-header">
+                            <h3><i class="fas fa-chart-line"></i> Analytics</h3>
+                            <button class="btn-primary" onclick="viewDetailedAnalytics()">
+                                <i class="fas fa-chart-bar"></i> Detailed View
+                            </button>
+                        </div>
+                        <div class="analytics-data" id="analyticsData">
+                            <!-- Analytics will be populated here -->
+                        </div>
+                    </div>
+
+                    <div class="admin-card">
+                        <div class="card-header">
+                            <h3><i class="fas fa-download"></i> Export & Reports</h3>
+                        </div>
+                        <div class="export-controls">
+                            <button class="btn-secondary" onclick="exportReports()">
+                                <i class="fas fa-file-csv"></i> Export CSV
+                            </button>
+                            <button class="btn-secondary" onclick="showSystemSettings()">
+                                <i class="fas fa-cog"></i> Settings
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="admin-card">
+                        <div class="card-header">
+                            <h3><i class="fas fa-server"></i> System Status</h3>
+                        </div>
+                        <div class="system-status" id="systemStatus">
+                            <!-- System status will be populated here -->
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Modal Overlay -->
+    <div class="modal-overlay" id="modalOverlay">
+        <div class="modal-content" id="modalContent">
+            <!-- Modal content will be populated here -->
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
